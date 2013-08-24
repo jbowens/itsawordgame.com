@@ -1,0 +1,13 @@
+html, body {
+    margin: 0;
+    padding: 0;
+}
+
+h1 {
+    font-family: 'Trykker';
+    font-size: 3em;
+}
+
+#header {
+    margin: 2em;
+}

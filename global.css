@@ -11,3 +11,41 @@ h1 {
 #header {
     margin: 2em;
 }
+
+#board {
+    width: 600px;
+    margin: 0 auto;
+}
+
+#board .cell {
+    position: relative;
+    width: 90px;
+    height: 90px;
+    margin: 5px;
+    text-align: center;
+    float: left;
+    font-family: verdana;
+    font-size: 100px;
+    background: #EEE;
+    line-height: 100%;
+}
+
+#board .cell .overlay {
+    position: absolute;
+    width: 90px;
+    height: 90px;
+    top: 0;
+    left: 0;
+    z-index: 10;
+}
+
+#board .hover {
+    background: #A34363;
+    color: #FFF;
+}
+
+#board .cell .inner-cell {
+    vertical-align: middle;
+    font-size: 0.3em;
+}
+}

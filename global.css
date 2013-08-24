@@ -12,31 +12,32 @@ h1 {
     margin: 2em;
 }
 
+#content {
+    margin-bottom: 5em;
+}
+
 #board {
-    width: 600px;
+    width: 800px;
     margin: 0 auto;
+    cursor: pointer;
 }
 
 #board .cell {
     position: relative;
-    width: 90px;
-    height: 90px;
-    margin: 5px;
+    width: 140px;
+    height: 140px;
+    margin: 10px;
     text-align: center;
     float: left;
-    font-family: verdana;
-    font-size: 100px;
+    font-family: verdana, sans-serif;
+    font-size: 140px;
     background: #EEE;
     line-height: 100%;
 }
 
-#board .cell .overlay {
-    position: absolute;
-    width: 90px;
-    height: 90px;
-    top: 0;
-    left: 0;
-    z-index: 10;
+#board .cell .letter {
+    padding: 35px;
+    z-index: 15;
 }
 
 #board .hover {
@@ -48,4 +49,7 @@ h1 {
     vertical-align: middle;
     font-size: 0.3em;
 }
+
+.clearfix {
+    clear: both;
 }

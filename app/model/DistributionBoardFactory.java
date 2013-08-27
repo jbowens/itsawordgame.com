@@ -1,4 +1,4 @@
-package model
+package model;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -9,7 +9,7 @@ import java.util.Random;
  *
  * @author jbowens
  */
-public class DistributionBoardFactory
+public class DistributionBoardFactory implements BoardFactory
 {
 
     /* Frequencies for all 26 letters of the alphabet.
@@ -18,7 +18,7 @@ public class DistributionBoardFactory
                                                           .02015, .06094, .06966, .00153, .00772, .04025,
                                                           .02406, .06749, .07507, .01929, .00095, .05987,
                                                           .06327, .09056, .02758, .00978, .02360, .00150,
-                                                          .01974, .00074}
+                                                          .01974, .00074};
 
     // Random number generator used for choosing numbers.
     protected Random m_randomGenerator = new Random();
@@ -47,7 +47,7 @@ public class DistributionBoardFactory
      * Generates a width x height baord with letters randomly distributed according
      * to the letter frequencies within the English language.
      */
-    public Board generateRandomBoard(int width, int height)
+    public Board generateBoard(int width, int height)
     {
         Collection<Cell> cells = new ArrayList<Cell>();
 

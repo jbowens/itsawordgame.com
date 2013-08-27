@@ -21,5 +21,19 @@ public class Board
         m_cells = cells;
     }
 
+    public int getWidth()
+    {
+        return m_width;
+    }
+    
+    public int getHeight()
+    {
+        return m_height;
+    }
+
+    public Collection<Cell> getCells()
+    {
+        return m_cells;
+    }
 
 }

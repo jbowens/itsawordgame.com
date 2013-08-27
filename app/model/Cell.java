@@ -13,7 +13,7 @@ public class Cell {
     protected int m_row;
     protected int m_column;
 
-    public Cell(char letter, int row, int column)
+    public Cell(int row, int column, char letter)
     {
         if (! Character.isLetter(letter)) {
             throw new IllegalArgumentException("The given character is not a letter.");
@@ -59,9 +59,9 @@ public class Cell {
 
         Cell otherCell = (Cell) other;
 
-        return other.getRow() == m_row &&
-               other.getColumn() == m_column &&
-               other.getLetter() == m_letter;
+        return otherCell.getRow() == m_row &&
+               otherCell.getColumn() == m_column &&
+               otherCell.getLetter() == m_letter;
     }
 
     @Override

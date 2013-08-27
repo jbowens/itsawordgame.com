@@ -3,8 +3,6 @@
     // Setup
     $(document).ready(function(e) {
 
-        constructRandomBoard();
-        
         initGame();
 
         // TODO: Do setup
@@ -16,10 +14,10 @@
     function initGame() {
         $.get('/init-game', function(round) {
             round = $.parseJSON(round);
-            // Sort the cells by row, column
             var cells = round.board.cells;
+
+            // Sort the cells by row, column
             cells.sort(function (a, b) { return a.row * round.board.width + a.column - (b.row * round.board.width + b.column)});
-            console.log(cells.map( function(x) { return "("+x.row+","+x.column+")" }));
 
             var clearfix = $("#board .clearfix");
 
@@ -78,22 +76,6 @@
 
         animationTick();
 
-    }
-
-    function constructRandomBoard() {
-        var board = $("#board");
-        var clearfix = $("#board .clearfix");
-
-        for (var r = 0; r < height; r++)
-        {
-            for (var c = 0; c < width; c++)
-            {
-                var randomNumber = Math.floor(Math.random() * 26);
-                var randomLetter = String.fromCharCode(randomNumber + 65);
-                var cell = constructCell(randomLetter, r, c);
-               $(cell).insertBefore(clearfix); 
-            }
-        }
     }
 
 })();

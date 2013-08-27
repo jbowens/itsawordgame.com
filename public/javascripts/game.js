@@ -4,12 +4,36 @@
     $(document).ready(function(e) {
 
         constructRandomBoard();
+        
+        initGame();
 
         // TODO: Do setup
     });
 
     var width = 5;
     var height = 4;
+
+    function initGame() {
+        $.get('/init-game', function(round) {
+            round = $.parseJSON(round);
+            // Sort the cells by row, column
+            var cells = round.board.cells;
+            cells.sort(function (a, b) { return a.row * round.board.width + a.column - (b.row * round.board.width + b.column)});
+            console.log(cells.map( function(x) { return "("+x.row+","+x.column+")" }));
+
+            var clearfix = $("#board .clearfix");
+
+            // Empty out the board
+            clearfix.siblings().remove();
+    
+            // Add the new cells
+            for (var i = 0; i < cells.length; i++)
+            {
+                var cell = constructCell(cells[i].letter, cells[i].row, cells[i].column);
+                $(cell).insertBefore(clearfix); 
+            }
+        });
+    }
 
     function constructCell(letter, row, column) {
         var cell = $('<div class="cell"></div>');

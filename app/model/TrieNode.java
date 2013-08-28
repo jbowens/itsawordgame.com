@@ -1,7 +1,7 @@
 package model;
 
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A node within a Trie.
@@ -16,22 +16,13 @@ public class TrieNode
 
     /* We expect our tries for boards to be pretty sparse, so creating an
      * array for every node would likely waste memory. Instead, we have a
-     * collection of all children.
+     * map of all children.
      */
-    protected Collection<TrieNode> m_children;
+    protected Map<Character,TrieNode> m_children;
 
-    public TrieNode(char character)
+    public TrieNode()
     {
-        m_char = character;
-        m_children = new ArrayList<TrieNode>();
-    }
-
-    /**
-     * Returns the character index of this node.
-     */
-    public char getCharacter()
-    {
-        return m_char;
+        m_children = new HashMap<Character,TrieNode>();
     }
 
     /**
@@ -42,16 +33,8 @@ public class TrieNode
      */
     public TrieNode getChildForCharacter(char c)
     {
-        for (TrieNode node : m_children)
-        {
-            if (c == node.getCharacter())
-            {
-                return node;
-            }
-        }
-
-        // not found
-        return null;
+        Character character = new Character(c);
+        return m_children.containsKey(character) ? m_children.get(character) : null;
     }
 
     /**
@@ -76,17 +59,17 @@ public class TrieNode
      * Inserts the given node as a child of this node. Throws illegal argument exception if the node is indexed
      * by a character that already exists as a child of this node.
      */
-    public void insertNode(TrieNode newNode)
+    public void insertNode(char c, TrieNode newNode)
     {
         // Verify that this node isn't overwriting an existing node.
-        TrieNode similarChild = getChildForCharacter(newNode.getCharacter());
+        TrieNode similarChild = getChildForCharacter(c);
 
         if (similarChild != null)
         {
-            throw new IllegalArgumentException("A node already exists at this element with that character '"+newNode.getCharacter()+"'");
+            throw new IllegalArgumentException("A node already exists at this element with that character '"+c+"'");
         }
 
-        m_children.add(newNode);
+        m_children.put(c, newNode);
     }
 
     /**
@@ -104,10 +87,10 @@ public class TrieNode
             TrieNode newNode = currParent.getChildForCharacter(substr.charAt(i));
             if (newNode == null)
             {
-                newNode = new TrieNode(substr.charAt(i));
+                newNode = new TrieNode();
+                currParent.insertNode(substr.charAt(i), newNode);
                 existed = false;
             }
-            currParent.insertNode(newNode);
             currParent = newNode;
         }
         return existed;

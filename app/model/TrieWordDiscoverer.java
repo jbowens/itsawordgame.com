@@ -33,7 +33,7 @@ public class TrieWordDiscoverer implements WordDiscoverer
 
                 if(replacementNode.isWord())
                 {
-                    // This is a matching word! Return this a scored word.
+                    // This is a matching word! Return this as a scored word.
                     String str = replacementNode.getAncestralString();
                     Word word = new Word(str);
                     words.add(word);

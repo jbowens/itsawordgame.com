@@ -25,10 +25,10 @@ public class TrieWordDiscoverer implements WordDiscoverer
         for (TrieNode node : m_previousNodes)
         {
             TrieNode replacementNode = node.getChildForCharacter(letter);
-            m_previousNodes.remove(replacementNode);
+            m_previousNodes.remove(node);
             if (replacementNode != null)
             {
-                // Add this node back in, it has a subtrie
+                // Add this node back in, it has a matching subtrie
                 m_previousNodes.add(replacementNode);
 
                 if(replacementNode.isWord())

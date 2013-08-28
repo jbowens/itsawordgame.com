@@ -11,15 +11,68 @@ import java.util.Map;
 public class TrieNode
 {
 
+    // The parent of this node
+    protected TrieNode m_parent;
+
+    // If this node marks the end of any word
+    protected boolean m_isWord;
+
     /* We expect our tries for boards to be pretty sparse, so creating an
      * array for every node would likely waste memory. Instead, we have a
      * map of all children.
      */
     protected Map<Character,TrieNode> m_children;
 
+    /* For backtracking, we also maintain a map from node instances to
+     * characters.
+     */
+    protected Map<TrieNode,Character> m_backtrack;
+
     public TrieNode()
     {
         m_children = new HashMap<Character,TrieNode>();
+        m_backtrack = new HashMap<TrieNode,Character>();
+    }
+
+    public boolean isWord()
+    {
+        return m_isWord;
+    }
+
+    public void setIsWord()
+    {
+        m_isWord = true;
+    }
+
+    public boolean hasParent()
+    {
+        return m_parent != null;
+    }
+
+    public TrieNode getParent()
+    {
+        return m_parent;
+    }
+
+    public String getAncestralString()
+    {
+        StringBuilder builder = new StringBuilder();
+
+        TrieNode curr = this;
+        while (curr.hasParent())
+        {
+            TrieNode parent = curr.getParent();
+            char c = parent.getCharacterToChild(curr);
+            builder.insert(c, 0);
+            curr = parent;
+        }
+
+        return builder.toString();
+    }
+
+    public char getCharacterToChild(TrieNode child)
+    {
+        return m_backtrack.get(child);
     }
 
     /**
@@ -63,10 +116,12 @@ public class TrieNode
 
         if (similarChild != null)
         {
-            throw new IllegalArgumentException("A node already exists at this element with that character '"+c+"'");
+            throw new IllegalArgumentException("A node already exists at this element with the character '"+c+"'");
         }
 
         m_children.put(c, newNode);
+        m_backtrack.put(newNode, c);
+        newNode.m_parent = this;
     }
 
     /**
@@ -78,7 +133,6 @@ public class TrieNode
     public boolean insertString(String substr)
     {
         TrieNode currParent = this;
-        boolean existed = true;
         for (int i = 0; i < substr.length(); i++)
         {
             TrieNode newNode = currParent.getChildForCharacter(substr.charAt(i));
@@ -86,10 +140,15 @@ public class TrieNode
             {
                 newNode = new TrieNode();
                 currParent.insertNode(substr.charAt(i), newNode);
-                existed = false;
             }
             currParent = newNode;
         }
+
+        boolean existed = currParent.isWord();
+
+        // Mark the final node as a word
+        currParent.setIsWord();
+
         return existed;
     }
 

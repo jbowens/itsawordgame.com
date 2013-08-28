@@ -27,4 +27,9 @@ public class Word
         return m_word != null && m_word.equals(thatWord.getValue());
     }
 
+    public int hashCode()
+    {
+        return m_word.hashCode();
+    }
+
 }

@@ -1,6 +1,10 @@
 @()
-
 @main("It's a word game") {
+<script type="text/javascript" charset="utf-8">
+    // Save the web socket url so that we have access to it from js.
+    window.gameSocketUrl = "@routes.Application.gameStream.webSocketURL(request)";
+</script>
+
 <div id="board">
 
     <div class="clearfix"></div>

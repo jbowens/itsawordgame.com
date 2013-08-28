@@ -4,6 +4,11 @@
     var ANIMATION_GRANULARITY = 30;
     var ANIMATION_PAUSE_MILLI = 40;
 
+    // Global variables
+    var width = 5;
+    var height = 4;
+    var gameSocket = null;
+
     // Setup
     $(document).ready(function(e) {
 
@@ -12,13 +17,13 @@
         // TODO: Do setup
     });
 
-    var width = 5;
-    var height = 4;
-
     function initGame() {
         $.get('/init-game', function(round) {
             round = $.parseJSON(round);
             var cells = round.board.cells;
+
+            width = round.board.width;
+            height = round.board.height;
 
             // Sort the cells by row, column
             cells.sort(function (a, b) { return a.row * round.board.width + a.column - (b.row * round.board.width + b.column)});
@@ -37,6 +42,65 @@
         });
     }
 
+    /* Receives any game stream messages from the server. These are mostly
+     * reports of successful word scores.
+     */
+    function receiveGameEvent(event)
+    {
+        var data = JSON.parse(event.data);
+        
+        // Handle errors
+        if (data.error) {
+            // TODO: Handle gracefully
+            console.log(data.error.message);
+        }
+
+        // TODO: Implement
+    }
+
+    /* Event handler for socket closes.
+     */
+    function onSocketClose(event)
+    {
+        gameSocket = null;
+        console.log(event);
+    }
+
+    /* Event handler for socket errors.
+     */
+    function onSocketError(event)
+    {
+        // TODO: Handle gracefully
+        console.log(event);
+    }
+
+    /* Opens a Web Socket connection to the server on which user events
+     * and game statuses can stream back and forth. There must not be
+     * an existing connection. The resulting connection is saved in
+     * the gameSocket global.
+     */
+    function connectGameStream() {
+        if (!window.gameSocketUrl)
+            throw new Error("Game socket url is not exposed");
+
+        if (gameSocket)
+            throw new Error("A game socket is already open.");
+
+        var WS = window['MozWebSocket'] ? MozWebSocket : WebSocket;
+        gameSocket = new WS(window.gameSocketUrl);
+        gameSocket.onmessage = receiveGameEvent;
+        gameSocket.onclose = onSocketClose;
+        gameSocket.onerror = onSocketError;
+    }
+
+    /*************************************************************
+     *                     UI Functionality                      *
+     *************************************************************/
+
+    /* Constructs a cell with the given data and returns the outer
+     * div of the cell. Used in refreshing the board when a new game
+     * begins.
+     */
     function constructCell(letter, row, column) {
         var cell = $('<div class="cell"></div>');
         cell.data('row', row);
@@ -51,11 +115,15 @@
         return cell;
     }
 
+    /* Event listener for when the user begins hovering over a cell.
+     */
     function cellHover(e) {
         var cell = $(this).closest('.cell');
         cell.addClass('hover');
     }
 
+    /* Event listener for when the user's cursor leaves a cell.
+     */
     function cellExit(e) {
         var cell = $(this).closest('.cell');
         var innerCell = cell.find('.inner-cell');

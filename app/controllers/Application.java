@@ -45,7 +45,7 @@ public class Application extends Controller
         return notFound(fourohfour.render());
     }
 
-    public static WebSocket<JsonNode> game()
+    public static WebSocket<JsonNode> gameStream()
     {
         return new WebSocket<JsonNode>() {
             // Called when the WebSocket handshake is done

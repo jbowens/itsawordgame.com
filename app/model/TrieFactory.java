@@ -13,7 +13,7 @@ public class TrieFactory
     /**
      * Constructs a Trie from a collection of strings.
      */
-    public TrieNode constructFromCollection(Collection<String> strs)
+    public TrieNode fromCollection(Collection<String> strs)
     {
         TrieNode root = new TrieNode();
         
@@ -23,6 +23,14 @@ public class TrieFactory
         }
 
         return root;
+    }
+
+    /**
+     * Constructs an empty trie.
+     */
+    public TrieNode emptyTrie()
+    {
+        return new TrieNode();
     }
 
 }

@@ -35,7 +35,7 @@ public class TrieWordDiscoverer implements WordDiscoverer
                 // Add this node back in, it has a matching subtrie
                 m_previousNodes.add(replacementNode);
 
-                if(replacementNode.isWord())
+                if (replacementNode.isWord())
                 {
                     // This is a matching word! Return this as a scored word.
                     String str = replacementNode.getAncestralString();

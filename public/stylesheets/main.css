@@ -6,10 +6,12 @@ html, body {
 h1 {
     font-family: 'Trykker';
     font-size: 3em;
+    margin: 0.25em 0;
+    padding: 0;
 }
 
 #header {
-    margin: 2em;
+    margin: 1em;
 }
 
 #content {

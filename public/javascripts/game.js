@@ -2,7 +2,7 @@
 
     // Constants
     var ANIMATION_GRANULARITY = 30;
-    var ANIMATION_PAUSE_MILLI = 30;
+    var ANIMATION_PAUSE_MILLI = 40;
 
     // Setup
     $(document).ready(function(e) {
@@ -61,6 +61,7 @@
         var innerCell = cell.find('.inner-cell');
         cell.removeClass('hover');
 
+        // Fade from the hover color to the regular cell background
         fade(innerCell, {r: 163, g:67, b:99});
     }
 

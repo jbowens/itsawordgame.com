@@ -45,8 +45,7 @@
     /* Receives any game stream messages from the server. These are mostly
      * reports of successful word scores.
      */
-    function receiveGameEvent(event)
-    {
+    function receiveGameEvent(event) {
         var data = JSON.parse(event.data);
         
         // Handle errors
@@ -55,21 +54,28 @@
             console.log(data.error.message);
         }
 
+        if (data.type == "newgame") {
+            // This event is establishing a new game.
+        } else {
+            // If we receive a game event that we don't understand, it
+            // could be that our client-side js is outdated. We should
+            // refresh the page to make sure we're in sync.
+            // TODO: Refresh the page.
+        }
+
         // TODO: Implement
     }
 
     /* Event handler for socket closes.
      */
-    function onSocketClose(event)
-    {
+    function onSocketClose(event) {
         gameSocket = null;
         console.log(event);
     }
 
     /* Event handler for socket errors.
      */
-    function onSocketError(event)
-    {
+    function onSocketError(event) {
         // TODO: Handle gracefully
         console.log(event);
     }
@@ -81,7 +87,7 @@
      */
     function connectGameStream() {
         if (!window.gameSocketUrl)
-            throw new Error("Game socket url is not exposed");
+            throw new Error("Game socket url is not exposed.");
 
         if (gameSocket)
             throw new Error("A game socket is already open.");
@@ -93,9 +99,9 @@
         gameSocket.onerror = onSocketError;
     }
 
-    /*************************************************************
-     *                     UI Functionality                      *
-     *************************************************************/
+    /*******************************************************************
+     *                         UI Functionality                        *
+     *******************************************************************/
 
     /* Constructs a cell with the given data and returns the outer
      * div of the cell. Used in refreshing the board when a new game
@@ -136,8 +142,7 @@
     /* Animates a color change for the given element, from the given color to
      * transparency.
      */
-    function fade(el, color)
-    {
+    function fade(el, color) {
         el = $(el);
         // If there's an existing animation, cancel it. This newer
         // one takes precedence.

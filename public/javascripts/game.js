@@ -1,5 +1,9 @@
 (function() {
 
+    // Constants
+    var ANIMATION_GRANULARITY = 30;
+    var ANIMATION_PAUSE_MILLI = 30;
+
     // Setup
     $(document).ready(function(e) {
 
@@ -57,25 +61,33 @@
         var innerCell = cell.find('.inner-cell');
         cell.removeClass('hover');
 
-        // Do an exit fade animation
-        if (cell.data('animationTimeout')) {
-            clearTimeout(cell.data('animationTimeout'));
-            cell.data('animationTimeout', null);
-        }
+        fade(innerCell, {r: 163, g:67, b:99});
+    }
 
-        var num = 30;
+    /* Animates a color change for the given element, from the given color to
+     * transparency.
+     */
+    function fade(el, color)
+    {
+        el = $(el);
+        // If there's an existing animation, cancel it. This newer
+        // one takes precedence.
+        if (el.data('animationTimeout')) {
+            clearTimeout(el.data('animationTimeout'));
+            el.data('animationTimeout', null);
+        }
+        
+        var animationFrame = ANIMATION_GRANULARITY;
         function animationTick() {
-            var alpha = num / 30.0;
-            var color = 'rgba(163,67,99,'+alpha+')';
-            innerCell.css('background-color', color);
-            num--;
+            var alpha = animationFrame / ANIMATION_GRANULARITY;
+            var cssColor = 'rgba('+color.r+','+color.g+','+color.b+','+alpha+')';
+            el.css('background-color', cssColor);
+            animationFrame--;
 
-            if (num > 0)
-                cell.data('animationTimeout', setTimeout(animationTick, 30));
+            if (animationFrame > 0)
+                el.data('animationTimeout', setTimeout(animationTick, ANIMATION_PAUSE_MILLI));
         }
-
         animationTick();
-
     }
 
 })();

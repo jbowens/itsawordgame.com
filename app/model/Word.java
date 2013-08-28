@@ -9,6 +9,11 @@ public class Word
 
     public Word(String word)
     {
+        if (null == word)
+        {
+            throw new IllegalArgumentException("A word value may not be null.");
+        }
+
         m_word = word;
     }
 

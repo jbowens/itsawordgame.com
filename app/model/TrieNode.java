@@ -11,9 +11,6 @@ import java.util.Map;
 public class TrieNode
 {
 
-    /* The character at this node. */
-    protected char m_char;
-
     /* We expect our tries for boards to be pretty sparse, so creating an
      * array for every node would likely waste memory. Instead, we have a
      * map of all children.

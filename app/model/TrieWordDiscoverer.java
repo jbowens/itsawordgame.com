@@ -9,18 +9,22 @@ import java.util.Collection;
 public class TrieWordDiscoverer implements WordDiscoverer
 {
 
+    // The root of the trie
+    protected TrieNode m_root;
+
     // Possible nodes that still match the current suffix
     protected Collection<TrieNode> m_previousNodes;
 
     public TrieWordDiscoverer(TrieNode root)
     {
+        m_root = root;
         m_previousNodes = new ArrayList<TrieNode>();
-        m_previousNodes.add(root);
     }
 
     public Collection<Word> processLetter(char letter)
     {
         Collection<Word> words = new ArrayList<Word>();
+        m_previousNodes.add(m_root);
 
         for (TrieNode node : m_previousNodes)
         {

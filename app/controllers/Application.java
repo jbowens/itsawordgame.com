@@ -1,5 +1,7 @@
 package controllers;
 
+import java.util.ArrayList;
+import java.util.Collection;
 import model.*;
 import org.codehaus.jackson.*;
 import org.codehaus.jackson.map.ObjectMapper;
@@ -16,6 +18,9 @@ public class Application extends Controller
 
     /* The round generator to use for generating new rounds. */
     protected static RoundGenerator m_roundGenerator = new RoundGenerator(BOARD_WIDTH, BOARD_HEIGHT);
+
+    /* All users currently playing/connected to the game. */
+    protected Collection<ActiveUser> m_activeUsers = new ArrayList<ActiveUser>();
   
     public static Result index()
     {

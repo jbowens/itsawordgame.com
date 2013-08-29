@@ -14,31 +14,15 @@
 
         initGame();
 
+//        connectGameStream();
+
         // TODO: Do setup
     });
 
     function initGame() {
         $.get('/init-game', function(round) {
             round = $.parseJSON(round);
-            var cells = round.board.cells;
-
-            width = round.board.width;
-            height = round.board.height;
-
-            // Sort the cells by row, column
-            cells.sort(function (a, b) { return a.row * round.board.width + a.column - (b.row * round.board.width + b.column)});
-
-            var clearfix = $("#board .clearfix");
-
-            // Empty out the board
-            clearfix.siblings().remove();
-    
-            // Add the new cells
-            for (var i = 0; i < cells.length; i++)
-            {
-                var cell = constructCell(cells[i].letter, cells[i].row, cells[i].column);
-                $(cell).insertBefore(clearfix); 
-            }
+            setupBoard(round); 
         });
     }
 
@@ -56,6 +40,8 @@
 
         if (data.type == "newgame") {
             // This event is establishing a new game.
+            var round = data.round;
+            setupBoard(round);
         } else {
             // If we receive a game event that we don't understand, it
             // could be that our client-side js is outdated. We should
@@ -102,6 +88,30 @@
     /*******************************************************************
      *                         UI Functionality                        *
      *******************************************************************/
+
+    /* Updates the board UI to represent the given round.
+     */
+    function setupBoard(round) {
+        var cells = round.board.cells;
+
+        width = round.board.width;
+        height = round.board.height;
+
+        // Sort the cells by row, column
+        cells.sort(function (a, b) { return a.row * round.board.width + a.column - (b.row * round.board.width + b.column)});
+
+        var clearfix = $("#board .clearfix");
+
+        // Empty out the board
+        clearfix.siblings().remove();
+
+        // Add the new cells
+        for (var i = 0; i < cells.length; i++)
+        {
+            var cell = constructCell(cells[i].letter, cells[i].row, cells[i].column);
+            $(cell).insertBefore(clearfix); 
+        }
+    }
 
     /* Constructs a cell with the given data and returns the outer
      * div of the cell. Used in refreshing the board when a new game

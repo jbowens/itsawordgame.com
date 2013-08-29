@@ -17,10 +17,10 @@ public class Application extends Controller
     protected static final int BOARD_HEIGHT = 4;
 
     /* The round generator to use for generating new rounds. */
-    protected static RoundGenerator m_roundGenerator = new RoundGenerator(BOARD_WIDTH, BOARD_HEIGHT);
+    protected static final RoundGenerator m_roundGenerator = new RoundGenerator(BOARD_WIDTH, BOARD_HEIGHT);
 
     /* All users currently playing/connected to the game. */
-    protected Collection<ActiveUser> m_activeUsers = new ArrayList<ActiveUser>();
+    protected static final Collection<ActiveUser> m_activeUsers = new ArrayList<ActiveUser>();
   
     public static Result index()
     {
@@ -56,6 +56,9 @@ public class Application extends Controller
             // Called when the WebSocket handshake is done
             public void onReady(WebSocket.In<JsonNode> in, WebSocket.Out<JsonNode> out)
             {
+                ActiveUser newUser = new ActiveUser(in, out);
+                m_activeUsers.add(newUser);
+
                 // TODO: Implement
             }
         };

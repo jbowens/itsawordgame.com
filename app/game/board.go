@@ -1,6 +1,9 @@
 package game
 
-import "bytes"
+import (
+	"bytes"
+	"fmt"
+)
 
 // Cell represents a single cell on the the board.
 type Cell struct {
@@ -22,6 +25,10 @@ type Location struct {
 	Y int `json:"y"`
 }
 
+func (l Location) String() string {
+	return fmt.Sprintf("(%v, %v)", l.X, l.Y)
+}
+
 // IsAdjacent returns whether the this location and the provided location are adjacent.
 func (l Location) IsAdjacent(o Location) bool {
 	if l.X != o.X-1 && l.X != o.X && l.X != o.X+1 {
@@ -36,6 +43,12 @@ func (l Location) IsAdjacent(o Location) bool {
 // Get retrieves a cell by its location.
 func (b Board) Get(x, y int) Cell {
 	return b.Cells[y*b.Height+x]
+}
+
+// LookupCellByID looks up the location of the cell with the given ID.
+func (b Board) LookupCellByID(id string) (Location, bool) {
+	l, ok := b.idMap[id]
+	return l, ok
 }
 
 // String returns a string representation of the board.

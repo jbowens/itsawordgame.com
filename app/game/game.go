@@ -13,10 +13,13 @@ const (
 
 // State encapsulates the state of a game.
 type State struct {
-	ID        string    `json:"id"`
-	CreatedAt time.Time `json:"created_at"`
-	UpdatedAt time.Time `json:"updated_at"`
-	Board     Board     `json:"board"`
+	ID        string            `json:"id"`
+	CreatedAt time.Time         `json:"created_at"`
+	UpdatedAt time.Time         `json:"updated_at"`
+	StartedAt time.Time         `json:"started_at"`
+	EndedAt   time.Time         `json:"ended_at"`
+	Board     Board             `json:"board"`
+	Players   map[string]Player `json:"players"`
 }
 
 // New constructs a new game.

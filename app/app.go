@@ -18,9 +18,9 @@ const (
 type App struct {
 	gamekeeper
 	publicServer   http.Server
-	publicMux      http.ServeMux
+	publicMux      *http.ServeMux
 	internalServer http.Server
-	internalMux    http.ServeMux
+	internalMux    *http.ServeMux
 	upgrader       websocket.Upgrader
 	stopped        sync.WaitGroup
 }
@@ -44,6 +44,8 @@ func (a *App) Start() {
 		Addr:    internalListenAddress,
 		Handler: http.HandlerFunc(a.serveInternalHTTP),
 	}
+	a.publicMux = http.NewServeMux()
+	a.internalMux = http.NewServeMux()
 
 	// Setup the routes.
 	a.publicMux.HandleFunc("/connect", a.websocketUpgradeRoute)

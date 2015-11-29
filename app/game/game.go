@@ -24,12 +24,28 @@ type State struct {
 
 // New constructs a new game.
 func New() *State {
+	moment := time.Now()
+
 	state := State{
 		ID:        uuid.New(),
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+		CreatedAt: moment,
+		UpdatedAt: moment,
+		StartedAt: moment.Add(3 * time.Second),
+		EndedAt:   moment.Add(3*time.Second + 2*time.Minute),
 		Board:     NewBoard(defaultBoardWidth, defaultBoardHeight),
 	}
-
 	return &state
+}
+
+// AddPlayer adds a player to the game with the provided id and name.
+func (s *State) AddPlayer(id string, name string) {
+	s.Players[id] = Player{
+		ID:   id,
+		Name: name,
+	}
+}
+
+// RemovePlayer removes the player with the provided id.
+func (s *State) RemovePlayer(id string) {
+	delete(s.Players, id)
 }

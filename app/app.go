@@ -16,21 +16,18 @@ const (
 
 // App encapsulates the entire itsawordgame.com server.
 type App struct {
-	publicServer     http.Server
-	publicMux        http.ServeMux
-	internalServer   http.Server
-	internalMux      http.ServeMux
-	upgrader         websocket.Upgrader
-	incomingMessages chan incomingMessage
-	activeClients    map[string]*client
-	activeClientsMu  sync.Mutex
-	stopped          sync.WaitGroup
+	gamekeeper
+	publicServer   http.Server
+	publicMux      http.ServeMux
+	internalServer http.Server
+	internalMux    http.ServeMux
+	upgrader       websocket.Upgrader
+	stopped        sync.WaitGroup
 }
 
 // Start starts up the server.
 func (a *App) Start() {
-	a.incomingMessages = make(chan incomingMessage)
-	a.activeClients = make(map[string]*client)
+	a.gamekeeper.init()
 
 	// Initialize the websocket upgrader
 	a.upgrader = websocket.Upgrader{
@@ -94,9 +91,5 @@ func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	log.Info("Initializing a new client from host %s: %v", req.RemoteAddr, ws)
-
-	c := newClient(req.RemoteAddr, ws, a.incomingMessages)
-	a.activeClientsMu.Lock()
-	a.activeClients[c.id] = c
-	a.activeClientsMu.Unlock()
+	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages)
 }

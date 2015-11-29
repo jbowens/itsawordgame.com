@@ -1,6 +1,7 @@
 package app
 
 import (
+	"fmt"
 	"time"
 
 	"code.google.com/p/go-uuid/uuid"
@@ -10,7 +11,7 @@ import (
 )
 
 const (
-	outputChannelBuffer = 5
+	outputChannelBuffer = 10
 	writeWait           = 5 * time.Second
 	pingFrequency       = 10 * time.Second
 	maxMessageSize      = 1024 * 1024
@@ -31,6 +32,9 @@ func newClient(remoteAddr string, conn *websocket.Conn, incoming chan incomingMe
 		conn:       conn,
 	}
 
+	// TODO(jackson): Support joining with a custom name
+	c.name = fmt.Sprintf("Guest %s", c.id[:6])
+
 	log.Infof("Creating new client `%s` from %s", c.id, c.remoteAddr)
 
 	go c.writeLoop()
@@ -41,6 +45,7 @@ func newClient(remoteAddr string, conn *websocket.Conn, incoming chan incomingMe
 
 type client struct {
 	id         string
+	name       string
 	remoteAddr string
 	pingTicker *time.Ticker
 	output     chan ServerMessage
@@ -102,15 +107,12 @@ func (c *client) readLoop() {
 		return nil
 	})
 	for {
-		var clientMessage ClientMessage
-		if err := c.conn.ReadJSON(&clientMessage); err != nil {
+		msg := incomingMessage{client: c}
+		if err := c.conn.ReadJSON(&msg.ClientMessage); err != nil {
 			c.conn.Close()
 			break
 		}
 
-		c.input <- incomingMessage{
-			ClientMessage: clientMessage,
-			client:        c,
-		}
+		c.input <- msg
 	}
 }

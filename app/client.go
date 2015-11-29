@@ -16,12 +16,18 @@ const (
 	maxMessageSize      = 1024 * 1024
 )
 
-func newClient(remoteAddr string, conn *websocket.Conn) *client {
+type incomingMessage struct {
+	ClientMessage
+	client *client
+}
+
+func newClient(remoteAddr string, conn *websocket.Conn, incoming chan incomingMessage) *client {
 	c := &client{
 		id:         uuid.New(),
 		remoteAddr: remoteAddr,
 		pingTicker: time.NewTicker(pingFrequency),
-		output:     make(chan interface{}, outputChannelBuffer),
+		output:     make(chan ServerMessage, outputChannelBuffer),
+		input:      incoming,
 		conn:       conn,
 	}
 
@@ -37,7 +43,8 @@ type client struct {
 	id         string
 	remoteAddr string
 	pingTicker *time.Ticker
-	output     chan interface{}
+	output     chan ServerMessage
+	input      chan incomingMessage
 	conn       *websocket.Conn
 }
 
@@ -86,6 +93,8 @@ func (c *client) writeLoop() {
 }
 
 func (c *client) readLoop() {
+	defer log.Infof("Exiting read routine for client %s", c.id)
+
 	c.conn.SetReadLimit(maxMessageSize)
 	c.conn.SetReadDeadline(time.Time{})
 	c.conn.SetPongHandler(func(msg string) error {
@@ -93,9 +102,15 @@ func (c *client) readLoop() {
 		return nil
 	})
 	for {
-		if _, _, err := c.conn.NextReader(); err != nil {
+		var clientMessage ClientMessage
+		if err := c.conn.ReadJSON(&clientMessage); err != nil {
 			c.conn.Close()
 			break
+		}
+
+		c.input <- incomingMessage{
+			ClientMessage: clientMessage,
+			client:        c,
 		}
 	}
 }

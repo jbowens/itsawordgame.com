@@ -5,6 +5,7 @@ import (
 	"sync"
 
 	log "github.com/Sirupsen/logrus"
+	"github.com/gorilla/websocket"
 )
 
 // TODO(jackson): Move configuration data into a file.
@@ -19,11 +20,18 @@ type App struct {
 	publicMux      http.ServeMux
 	internalServer http.Server
 	internalMux    http.ServeMux
+	upgrader       websocket.Upgrader
 	stopped        sync.WaitGroup
 }
 
 // Start starts up the server.
 func (a *App) Start() {
+	// Initialize the websocket upgrader
+	a.upgrader = websocket.Upgrader{
+		ReadBufferSize:  1024,
+		WriteBufferSize: 1024,
+	}
+
 	// Initialize the http servers.
 	a.publicServer = http.Server{
 		Addr:    publicListenAddress,
@@ -33,6 +41,9 @@ func (a *App) Start() {
 		Addr:    internalListenAddress,
 		Handler: http.HandlerFunc(a.serveInternalHTTP),
 	}
+
+	// Setup the routes.
+	a.publicMux.HandleFunc("/connect", a.websocketUpgradeRoute)
 
 	go a.listenAndServe(&a.publicServer)
 	go a.listenAndServe(&a.internalServer)
@@ -62,4 +73,20 @@ func (a *App) servePublicHTTP(rw http.ResponseWriter, req *http.Request) {
 func (a *App) serveInternalHTTP(rw http.ResponseWriter, req *http.Request) {
 	log.Infof("[internal] %s — %s %s", req.RemoteAddr, req.Method, req.URL.Path)
 	a.internalMux.ServeHTTP(rw, req)
+}
+
+func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
+	if req.Method != "GET" {
+		http.Error(rw, "Method not allowed", 405)
+		return
+	}
+
+	ws, err := a.upgrader.Upgrade(rw, req, nil)
+	if err != nil {
+		log.Error(err.Error())
+		return
+	}
+
+	log.Info("Initializing a new client from host %s: %v", req.RemoteAddr, ws)
+	// TODO(jackson): Add new client
 }

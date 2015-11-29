@@ -90,6 +90,6 @@ func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
 		return
 	}
 
-	log.Info("Initializing a new client from host %s: %v", req.RemoteAddr, ws)
+	log.Infof("Initializing a new client from host %s: %v", req.RemoteAddr, ws)
 	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages)
 }

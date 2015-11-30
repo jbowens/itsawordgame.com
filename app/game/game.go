@@ -8,7 +8,7 @@ import (
 
 const (
 	defaultBoardWidth  = 5
-	defaultBoardHeight = 5
+	defaultBoardHeight = 4
 )
 
 // State encapsulates the state of a game.

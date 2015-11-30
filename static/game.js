@@ -7,6 +7,7 @@
   var width = 5;
   var height = 4;
   var ws = null;
+  var game = null;
 
   $(document).ready(function(e) {
     connect();
@@ -19,15 +20,20 @@
   function receiveEvent(event) {
     var data = JSON.parse(event.data);
 
+    console.log(data);
+
     // Handle errors
     if (data.error) {
       // TODO: Handle gracefully
       console.log(data.error.message);
+      return;
     }
 
-    if (data.type == "announce_game") {
-      console.log("game announcement");
+    if (data.message_type == "announce_game") {
+      game = data.game;
+      setupBoard(game);
     }
+
   }
 
   /* Event handler for socket closes.
@@ -64,18 +70,12 @@
    *                         UI Functionality                        *
    *******************************************************************/
 
-  /* Updates the board UI to represent the given round.
+  /* Updates the board UI to represent the given game.
    */
-  function setupBoard(round) {
-    var cells = round.board.cells;
-
-    width = round.board.width;
-    height = round.board.height;
-
-    // Sort the cells by row, column
-    cells.sort(function (a, b) {
-      return a.row * round.board.width + a.column - (b.row * round.board.width + b.column);
-    });
+  function setupBoard(g) {
+    var cells = g.board.cells;
+    var width = g.board.width;
+    var height = g.board.height;
 
     var clearfix = $("#board .clearfix");
 
@@ -83,9 +83,8 @@
     clearfix.siblings().remove();
 
     // Add the new cells
-    for (var i = 0; i < cells.length; i++)
-    {
-      var cell = constructCell(cells[i].letter, cells[i].row, cells[i].column);
+    for (var i = 0; i < cells.length; i++) {
+      var cell = constructCell(String.fromCharCode(cells[i].letter), i / width, i % height, cells[i].id);
       $(cell).insertBefore(clearfix);
     }
   }
@@ -94,8 +93,9 @@
    * div of the cell. Used in refreshing the board when a new game
    * begins.
    */
-  function constructCell(letter, row, column) {
+  function constructCell(letter, row, column, id) {
     var cell = $('<div class="cell"></div>');
+    cell.data('id', id);
     cell.data('row', row);
     cell.data('column', column);
 

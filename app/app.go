@@ -1,6 +1,7 @@
 package app
 
 import (
+	"html/template"
 	"net/http"
 	"sync"
 
@@ -17,6 +18,7 @@ const (
 // App encapsulates the entire itsawordgame.com server.
 type App struct {
 	gamekeeper
+	templates      *template.Template
 	publicServer   http.Server
 	publicMux      *http.ServeMux
 	internalServer http.Server
@@ -28,6 +30,9 @@ type App struct {
 // Start starts up the server.
 func (a *App) Start() {
 	a.gamekeeper.init()
+
+	// Load all the html templates
+	a.templates = template.Must(template.ParseFiles("static/index.html"))
 
 	// Initialize the websocket upgrader
 	a.upgrader = websocket.Upgrader{
@@ -49,6 +54,8 @@ func (a *App) Start() {
 
 	// Setup the routes.
 	a.publicMux.HandleFunc("/connect", a.websocketUpgradeRoute)
+	a.publicMux.HandleFunc("/static", a.static)
+	a.publicMux.HandleFunc("/", a.index)
 
 	go a.listenAndServe(&a.publicServer)
 	go a.listenAndServe(&a.internalServer)
@@ -94,4 +101,19 @@ func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
 
 	log.Infof("Initializing a new client from host %s: %v", req.RemoteAddr, ws)
 	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages)
+}
+
+func (a *App) static(rw http.ResponseWriter, req *http.Request) {
+	// filename := path.Base(req.URL.Path)
+	// b, err := ioutil.ReadFile("static/" + filename)
+	// http.ServeFile(rw, req, fmt.Sprintf("static/%s", filename))
+}
+
+func (a *App) index(rw http.ResponseWriter, req *http.Request) {
+	if req.URL.Path != "/" {
+		http.NotFoundHandler().ServeHTTP(rw, req)
+		return
+	}
+
+	a.templates.Execute(rw, nil)
 }

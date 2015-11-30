@@ -50,17 +50,12 @@
    * the ws global.
    */
   function connect() {
-    if (!window.gameSocketUrl) {
-      throw new Error("Game socket url is not exposed.");
-    }
-
     if (ws) {
       throw new Error("A game socket is already open.");
     }
 
     var WS = !!window.MozWebSocket ? MozWebSocket : WebSocket;
-    ws = new WS(window.gameSocketUrl);
-    ws.onmessage = receiveEvent;
+    ws = new WS("ws://" + window.location.host + "/connect"); ws.onmessage = receiveEvent;
     ws.onclose = onSocketClose;
     ws.onerror = onSocketError;
   }

@@ -33,6 +33,7 @@ func New() *State {
 		StartedAt: moment.Add(3 * time.Second),
 		EndedAt:   moment.Add(3*time.Second + 2*time.Minute),
 		Board:     NewBoard(defaultBoardWidth, defaultBoardHeight),
+		Players:   make(map[string]Player),
 	}
 	return &state
 }

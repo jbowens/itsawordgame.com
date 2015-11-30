@@ -1,7 +1,7 @@
 (function() {
   // Constants
   var ANIMATION_GRANULARITY = 30;
-  var ANIMATION_PAUSE_MILLI = 40;
+  var ANIMATION_PAUSE_MILLI = 20;
 
   // Global variables
   var width = 5;

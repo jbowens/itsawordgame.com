@@ -9,6 +9,11 @@ import (
 const (
 	defaultBoardWidth  = 5
 	defaultBoardHeight = 4
+
+	// boardMinimumWordCount defines the minimum number of words that should be in
+	// a game board. If we randomly generate a board with fewer words than this
+	// constant, we generate a new board.
+	boardMinimumWordCount = 150
 )
 
 // State encapsulates the state of a game.
@@ -27,16 +32,23 @@ type State struct {
 func New() *State {
 	moment := time.Now()
 
+	board := NewBoard(defaultBoardWidth, defaultBoardHeight)
+	solution := FindSolution(board)
+	for len(solution.Words()) < boardMinimumWordCount {
+		board = NewBoard(defaultBoardWidth, defaultBoardHeight)
+		solution = FindSolution(board)
+	}
+
 	state := State{
 		ID:        uuid.New(),
 		CreatedAt: moment,
 		UpdatedAt: moment,
 		StartedAt: moment.Add(3 * time.Second),
 		EndedAt:   moment.Add(3*time.Second + 2*time.Minute),
-		Board:     NewBoard(defaultBoardWidth, defaultBoardHeight),
+		Board:     board,
 		Players:   make(map[string]*Player),
+		Solution:  solution,
 	}
-	state.Solution = FindSolution(state.Board)
 	return &state
 }
 

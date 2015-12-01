@@ -40,9 +40,14 @@ func (l Location) IsAdjacent(o Location) bool {
 	return true
 }
 
+// WithinBounds determines whether the provided location is within bounds of this board.
+func (b Board) WithinBounds(x, y int) bool {
+	return x >= 0 && x < b.Width && y >= 0 && y < b.Height
+}
+
 // Get retrieves a cell by its location.
 func (b Board) Get(x, y int) Cell {
-	return b.Cells[y*b.Height+x]
+	return b.Cells[y*b.Width+x]
 }
 
 // LookupCellByID looks up the location of the cell with the given ID.

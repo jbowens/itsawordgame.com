@@ -95,6 +95,35 @@ func (gk *gamekeeper) manage() {
 				// Game review has ended
 				gk.start()
 			}
+		// Incoming messages from clients
+		case msg := <-gk.incomingMessages:
+			c, ok := gk.ActiveClients[msg.client.id]
+			if !ok {
+				log.Warningf("Discarding a message from client `%s` because that client already disconnected.", msg.client.id)
+				continue
+			}
+
+			player, ok := gk.ActiveGame.Player(msg.client.id)
+			if !ok {
+				log.Errorf("Player `%s` is not in game `%s`", msg.client.id, gk.ActiveGame.ID)
+				continue
+			}
+
+			if gk.CurrentState != ActiveGame {
+				log.Warningf("Discarding a message from client `%s` because there is no active game.", msg.client.id)
+				continue
+			}
+
+			if msg.MessageType == "cell_hover" {
+				scoreEvents := player.Cell(gk.ActiveGame.Solution, msg.CellID)
+				if len(scoreEvents) > 0 {
+					c.output <- ServerMessage{
+						MessageType: "score_event",
+						ServerTime:  time.Now(),
+						ScoreEvents: scoreEvents,
+					}
+				}
+			}
 		}
 	}
 }
@@ -104,6 +133,7 @@ func (gk *gamekeeper) start() {
 	for _, c := range gk.ActiveClients {
 		gk.ActiveGame.AddPlayer(c.id, c.name)
 	}
+	log.Infof("New game `%s` with words: %+v.", gk.ActiveGame.ID, gk.ActiveGame.Solution.Words())
 
 	// Announce the new game to all active clients. The game won't actually start until
 	// a few seconds later.

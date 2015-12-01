@@ -30,6 +30,10 @@
       setupBoard(game);
     } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
+    } else if (data.message_type == 'score_event') {
+      for (var i = 0; i < data.score_events.length; i++) {
+        console.log(data.score_events[i].word, data.score_events[i].points);
+      }
     }
   }
 
@@ -99,11 +103,14 @@
   function cellHover(e) {
     var cell = $(this).closest('.cell');
     if (!cell.hasClass('disabled')) {
-      cell.addClass('hover');
-      ws.send(JSON.stringify({
-        message_type: 'cell_hover',
-        cell_id: cell.data('id'),
-      }));
+
+      if (ws != null) {
+        cell.addClass('hover');
+        ws.send(JSON.stringify({
+          message_type: 'cell_hover',
+          cell_id: cell.data('id'),
+        }));
+      }
     }
   }
 

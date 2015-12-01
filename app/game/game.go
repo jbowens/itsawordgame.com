@@ -13,13 +13,14 @@ const (
 
 // State encapsulates the state of a game.
 type State struct {
-	ID        string            `json:"id"`
-	CreatedAt time.Time         `json:"created_at"`
-	UpdatedAt time.Time         `json:"updated_at"`
-	StartedAt time.Time         `json:"started_at"`
-	EndedAt   time.Time         `json:"ended_at"`
-	Board     Board             `json:"board"`
-	Players   map[string]Player `json:"players"`
+	ID        string             `json:"id"`
+	CreatedAt time.Time          `json:"created_at"`
+	UpdatedAt time.Time          `json:"updated_at"`
+	StartedAt time.Time          `json:"started_at"`
+	EndedAt   time.Time          `json:"ended_at"`
+	Board     Board              `json:"board"`
+	Players   map[string]*Player `json:"players"`
+	Solution  Solution           `json:"-"`
 }
 
 // New constructs a new game.
@@ -33,14 +34,21 @@ func New() *State {
 		StartedAt: moment.Add(3 * time.Second),
 		EndedAt:   moment.Add(3*time.Second + 2*time.Minute),
 		Board:     NewBoard(defaultBoardWidth, defaultBoardHeight),
-		Players:   make(map[string]Player),
+		Players:   make(map[string]*Player),
 	}
+	state.Solution = FindSolution(state.Board)
 	return &state
+}
+
+// Player retrieves the player with the provided id.
+func (s *State) Player(id string) (*Player, bool) {
+	p, ok := s.Players[id]
+	return p, ok
 }
 
 // AddPlayer adds a player to the game with the provided id and name.
 func (s *State) AddPlayer(id string, name string) {
-	s.Players[id] = Player{
+	s.Players[id] = &Player{
 		ID:   id,
 		Name: name,
 	}

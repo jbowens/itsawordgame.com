@@ -38,6 +38,10 @@ h1 {
     line-height: 100%;
 }
 
+#board .disabled {
+  cursor: auto;
+}
+
 #board .cell .letter {
     padding: 35px;
     z-index: 15;

@@ -25,10 +25,10 @@
       return;
     }
 
-    if (data.message_type == "announce_game") {
+    if (data.message_type == 'announce_game') {
       game = data.game;
       setupBoard(game);
-    } else if (data.message_type == "review") {
+    } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
     }
   }
@@ -100,6 +100,10 @@
     var cell = $(this).closest('.cell');
     if (!cell.hasClass('disabled')) {
       cell.addClass('hover');
+      ws.send(JSON.stringify({
+        message_type: 'cell_hover',
+        cell_id: cell.data('id'),
+      }));
     }
   }
 

@@ -1,6 +1,7 @@
 package app
 
 import (
+	"strings"
 	"time"
 
 	log "github.com/Sirupsen/logrus"
@@ -133,7 +134,9 @@ func (gk *gamekeeper) start() {
 	for _, c := range gk.ActiveClients {
 		gk.ActiveGame.AddPlayer(c.id, c.name)
 	}
-	log.Infof("New game `%s` with words: %+v.", gk.ActiveGame.ID, gk.ActiveGame.Solution.Words())
+
+	words := gk.ActiveGame.Solution.Words()
+	log.Infof("New game `%s` with %v words: %s", gk.ActiveGame.ID, len(words), strings.Join(words, ", "))
 
 	// Announce the new game to all active clients. The game won't actually start until
 	// a few seconds later.

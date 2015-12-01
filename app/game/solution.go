@@ -26,8 +26,12 @@ type Solution struct {
 	root trie
 }
 
+// Answer describes a specific valid cell sequence that yields a word.
 type Answer struct {
+	// Path contains a sequence of cell IDs, each adjacent to the next, that
+	// together form a word.
 	Path []string
+	// Word stores the word formed by concatenating all of the cells' letters.
 	Word string
 }
 
@@ -40,7 +44,13 @@ func (s Solution) CountDistinctPaths() int {
 
 // Words returns all the words in the board.
 func (s Solution) Words() []string {
-	words := s.root.Words()
+	set := map[string]struct{}{}
+	s.root.Words(set)
+
+	words := make([]string, 0, len(set))
+	for w := range set {
+		words = append(words, w)
+	}
 	sort.Strings(words)
 	return words
 }
@@ -51,16 +61,18 @@ type trie struct {
 	Next  map[string]*trie
 }
 
-func (t *trie) Words() (words []string) {
+// Words modifies the provided map to contain all the words within this trie as keys.
+func (t *trie) Words(set map[string]struct{}) {
 	if t.Valid {
-		words = append(words, t.Word)
+		set[t.Word] = struct{}{}
 	}
 	for _, next := range t.Next {
-		words = append(words, next.Words()...)
+		next.Words(set)
 	}
-	return words
 }
 
+// Count returns the number of answers contained within the trie. It double counts
+// words if there are multiple valid paths yielding the same word.
 func (t *trie) Count() (count int) {
 	if t.Valid {
 		count = 1

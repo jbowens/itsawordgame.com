@@ -22,13 +22,15 @@ type incomingMessage struct {
 	client *client
 }
 
-func newClient(remoteAddr string, conn *websocket.Conn, incoming chan incomingMessage) *client {
+func newClient(remoteAddr string, conn *websocket.Conn, incoming chan incomingMessage, closing chan *client) *client {
 	c := &client{
 		id:         uuid.New(),
 		remoteAddr: remoteAddr,
 		pingTicker: time.NewTicker(pingFrequency),
 		output:     make(chan ServerMessage, outputChannelBuffer),
 		input:      incoming,
+		closing:    closing,
+		closed:     make(chan struct{}),
 		conn:       conn,
 	}
 
@@ -50,7 +52,29 @@ type client struct {
 	pingTicker *time.Ticker
 	output     chan ServerMessage
 	input      chan incomingMessage
+	closing    chan *client
+	closed     chan struct{}
 	conn       *websocket.Conn
+}
+
+func (c *client) exit(graceful bool) {
+	// Non-blocking check if we're already closed.
+	select {
+	case <-c.closed:
+		return
+	default:
+		log.Infof("Client `%s` shutdown started", c.id)
+	}
+	close(c.closed)
+
+	if graceful {
+		if err := c.sendClose(); err != nil {
+			log.Errorf("error closing connection: %s", err)
+		}
+	}
+	c.conn.Close()
+	c.pingTicker.Stop()
+	c.closing <- c
 }
 
 func (c *client) ping() error {
@@ -59,7 +83,7 @@ func (c *client) ping() error {
 	return c.conn.WriteMessage(websocket.PingMessage, []byte{})
 }
 
-func (c *client) closeConnection() error {
+func (c *client) sendClose() error {
 	c.conn.SetWriteDeadline(time.Now().Add(writeWait))
 	return c.conn.WriteMessage(websocket.CloseMessage, []byte{})
 }
@@ -72,8 +96,7 @@ func (c *client) sendJSON(obj interface{}) error {
 func (c *client) writeLoop() {
 	defer func() {
 		log.Infof("Client %s exiting", c.id)
-		c.pingTicker.Stop()
-		c.conn.Close()
+		c.exit(false)
 	}()
 
 	for {
@@ -85,7 +108,7 @@ func (c *client) writeLoop() {
 			}
 		case msg, ok := <-c.output:
 			if !ok {
-				c.closeConnection()
+				c.exit(true)
 				return
 			}
 
@@ -109,8 +132,8 @@ func (c *client) readLoop() {
 	for {
 		msg := incomingMessage{client: c}
 		if err := c.conn.ReadJSON(&msg.ClientMessage); err != nil {
-			c.conn.Close()
-			break
+			c.exit(false)
+			return
 		}
 
 		c.input <- msg

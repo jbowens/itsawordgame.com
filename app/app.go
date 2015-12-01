@@ -100,7 +100,7 @@ func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
 	}
 
 	log.Infof("Initializing a new client from host %s", req.RemoteAddr)
-	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages)
+	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages, a.gamekeeper.DisconnectingClients)
 }
 
 func (a *App) index(rw http.ResponseWriter, req *http.Request) {

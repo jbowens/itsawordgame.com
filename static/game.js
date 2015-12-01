@@ -11,7 +11,6 @@
 
   $(document).ready(function(e) {
     connect();
-    // TODO: Do additional setup.
   });
 
   /* Receives any game stream messages from the server. These are mostly
@@ -20,11 +19,8 @@
   function receiveEvent(event) {
     var data = JSON.parse(event.data);
 
-    console.log(data);
-
     // Handle errors
     if (data.error) {
-      // TODO: Handle gracefully
       console.log(data.error.message);
       return;
     }
@@ -32,22 +28,9 @@
     if (data.message_type == "announce_game") {
       game = data.game;
       setupBoard(game);
+    } else if (data.message_type == "review") {
+      $("#board .cell").addClass("disabled");
     }
-
-  }
-
-  /* Event handler for socket closes.
-   */
-  function onSocketClose(event) {
-    ws = null;
-    console.log(event);
-  }
-
-  /* Event handler for socket errors.
-   */
-  function onSocketError(event) {
-    // TODO: Handle gracefully
-    console.log(event);
   }
 
   /* Opens a Web Socket connection to the server on which user events
@@ -62,16 +45,19 @@
 
     var WS = !!window.MozWebSocket ? MozWebSocket : WebSocket;
     ws = new WS("ws://" + window.location.host + "/connect"); ws.onmessage = receiveEvent;
-    ws.onclose = onSocketClose;
-    ws.onerror = onSocketError;
+    ws.onclose = function(event) {
+      ws = null;
+      console.log(event);
+    };
+    ws.onerror = function(event) {
+      console.log(event);
+    }
   }
 
   /*******************************************************************
    *                         UI Functionality                        *
    *******************************************************************/
 
-  /* Updates the board UI to represent the given game.
-   */
   function setupBoard(g) {
     var cells = g.board.cells;
     var width = g.board.width;
@@ -112,7 +98,9 @@
    */
   function cellHover(e) {
     var cell = $(this).closest('.cell');
-    cell.addClass('hover');
+    if (!cell.hasClass('disabled')) {
+      cell.addClass('hover');
+    }
   }
 
   /* Event listener for when the user's cursor leaves a cell.
@@ -120,10 +108,12 @@
   function cellExit(e) {
     var cell = $(this).closest('.cell');
     var innerCell = cell.find('.inner-cell');
-    cell.removeClass('hover');
 
-    // Fade from the hover color to the regular cell background
-    fade(innerCell, {r: 163, g:67, b:99});
+    if (cell.hasClass('hover')) {
+      cell.removeClass('hover');
+      // Fade from the hover color to the regular cell background
+      fade(innerCell, {r: 163, g:67, b:99});
+    }
   }
 
   /* Animates a color change for the given element, from the given color to

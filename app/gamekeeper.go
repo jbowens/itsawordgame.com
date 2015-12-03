@@ -114,6 +114,10 @@ func (gk *gamekeeper) manage() {
 				log.Warningf("Discarding a message from client `%s` because there is no active game.", msg.client.id)
 				continue
 			}
+			if gk.ActiveGame.StartedAt.After(time.Now()) {
+				log.Warningf("Discarding a message from client `%s` because the game has not started.", msg.client.id)
+				continue
+			}
 
 			if msg.MessageType == "cell_hover" {
 				scoreEvents := player.Cell(gk.ActiveGame.Solution, msg.CellID)

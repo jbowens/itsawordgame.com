@@ -8,9 +8,13 @@
   var height = 4;
   var ws = null;
   var game = null;
+  var timerText = null;
 
   $(document).ready(function(e) {
     connect();
+
+    timerTime = $('#timer .time');
+    setInterval(updateTimer, 200);
   });
 
   /* Receives any game stream messages from the server. These are mostly
@@ -31,8 +35,11 @@
     } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
     } else if (data.message_type == 'score_event') {
+      var wordsList = $('#my-words');
       for (var i = 0; i < data.score_events.length; i++) {
-        console.log(data.score_events[i].word, data.score_events[i].points);
+        var li = document.createElement('li');
+        $(li).text(data.score_events[i].word);
+        wordsList.append(li);
       }
     }
   }
@@ -152,4 +159,37 @@
     }
     animationTick();
   }
+
+  function updateTimer() {
+    if (game == null) {
+      timerTime.text('--:--');
+      return
+    }
+
+    var now = new Date();
+    var endTime = Date.parse(game.ended_at);
+    var seconds = (endTime - now) / 1000;
+    if (seconds > 0) {
+      timerTime.text(formatSeconds(seconds));
+    }
+  }
+
+  function zeroPad(n) {
+    var n = Math.floor(n);
+
+    if (n < 10) {
+      return "0" + n;
+    } else {
+      return n;
+    }
+  }
+
+  function formatSeconds(secs) {
+    if (secs >= 60) {
+      mins = (secs / 60);
+      secs = secs % 60;
+    }
+    return zeroPad(mins) + ":" + zeroPad(secs);
+  }
+
 })();

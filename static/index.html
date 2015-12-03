@@ -8,14 +8,25 @@
         <script type="text/javascript" src="/static/game.js"></script>
     </head>
     <body>
-        <div id="header">
+      <div id="cont">
+        <div id="primary">
+          <div id="header">
+            <div class="timer" id="timer"><span class="time">02:00</span><span class="desc"></span></div>
             <h1>It's a word game.</h1>
+            <div class="clearfix"></div>
+          </div>
+          <div id="content">
+              <div id="board">
+                  <div class="clearfix"></div>
+              </div>
+          </div>
         </div>
-        <div id="content">
-            <div id="board">
-                <div class="clearfix"></div>
-            </div>
+        <div id="secondary">
+          <ul id="my-words">
+          </ul>
         </div>
+        <div class="clearfix"></div>
+      </div>
     </body>
 </html>
 

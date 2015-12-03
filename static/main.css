@@ -8,11 +8,37 @@ h1 {
     font-size: 2.5em;
     margin: 0.25em 0;
     padding: 0;
-    text-align: center;
+    text-align: left;
+}
+
+#cont {
+  width: 1000px;
+  margin: 0 auto;
 }
 
 #header {
     margin: 1em;
+}
+
+#timer {
+  float: right;
+  margin-top: 1em;
+}
+
+#timer .time {
+  font-size: 1.5em;
+  font-family: arial, helvetica, verdana, sans-serif;
+}
+
+#secondary {
+  width: 200px;
+  float: left;
+  margin-top: 5em;
+}
+
+#primary {
+  width: 800px;
+  float: right;
 }
 
 #content {
@@ -20,8 +46,6 @@ h1 {
 }
 
 #board {
-    width: 800px;
-    margin: 0 auto;
     cursor: pointer;
 }
 

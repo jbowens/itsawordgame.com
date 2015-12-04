@@ -110,9 +110,9 @@ func FindSolution(board Board) Solution {
 	// Recursively traverse the board.
 	ch := make(chan Answer)
 	var wg sync.WaitGroup
+	wg.Add(board.Height * board.Width)
 	for r := 0; r < board.Height; r++ {
 		for c := 0; c < board.Width; c++ {
-			wg.Add(1)
 			go func(r, c int) {
 				generateSolution(ch, board, dictionaryPrefixTree, []string{}, make(map[string]struct{}), "", c, r)
 				wg.Done()

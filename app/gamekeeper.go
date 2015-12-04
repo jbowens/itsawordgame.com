@@ -58,6 +58,12 @@ func (gk *gamekeeper) manage() {
 				gk.start()
 			} else if gk.CurrentState == ActiveGame {
 				gk.ActiveGame.AddPlayer(c.id, c.name)
+				// Announce the existing game to the new player.
+				c.output <- ServerMessage{
+					MessageType: "announce_game",
+					ServerTime:  time.Now(),
+					Game:        gk.ActiveGame,
+				}
 			}
 		// Handle disconnecting clients
 		case c := <-gk.DisconnectingClients:

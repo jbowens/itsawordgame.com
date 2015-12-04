@@ -32,7 +32,7 @@ h1 {
 }
 
 #secondary {
-  width: 150px;
+  width: 175px;
   float: left;
   margin-top: 5em;
 }
@@ -40,6 +40,8 @@ h1 {
 ul#my-words {
   list-style: none;
   font-weight: bold;
+  margin: 0;
+  padding: 0;
 }
 
 ul#my-words li {
@@ -47,7 +49,7 @@ ul#my-words li {
 }
 
 #my-words li .points {
-  margin-left: 2em;
+  margin-left: 0.5em;
   color: #333;
   float: right;
 }
@@ -95,6 +97,13 @@ ul#my-words li {
 #board .cell .inner-cell {
     vertical-align: middle;
     font-size: 0.3em;
+}
+
+p#rules {
+  font-size: 0.8em;
+  line-height: 1.4em;
+  margin: 0 auto;
+  padding: 1em;
 }
 
 .clearfix {

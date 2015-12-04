@@ -17,7 +17,7 @@ func init() {
 		panic(err)
 	}
 
-	d = dictionary.Filter(d, func(w string) bool { return len(w) >= 3 })
+	d = dictionary.Filter(d, func(w string) bool { return len(w) >= 4 })
 	dictionaryPrefixTree = dictionary.BuildPrefixTree(d)
 }
 

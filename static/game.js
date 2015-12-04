@@ -32,6 +32,7 @@
     if (data.message_type == 'announce_game') {
       game = data.game;
       setupBoard(game);
+      $('#my-words').empty();
     } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
     } else if (data.message_type == 'score_event') {
@@ -39,6 +40,9 @@
       for (var i = 0; i < data.score_events.length; i++) {
         var li = document.createElement('li');
         $(li).text(data.score_events[i].word);
+        var points = $('<span class="points"></span>');
+        points.text(data.score_events[i].points);
+        $(li).append(points);
         wordsList.append(li);
       }
     }
@@ -171,6 +175,8 @@
     var seconds = (endTime - now) / 1000;
     if (seconds > 0) {
       timerTime.text(formatSeconds(seconds));
+    } else {
+      timerTime.text('--:--');
     }
   }
 
@@ -185,8 +191,9 @@
   }
 
   function formatSeconds(secs) {
+    var mins = 0;
     if (secs >= 60) {
-      mins = (secs / 60);
+      mins = Math.floor(secs / 60);
       secs = secs % 60;
     }
     return zeroPad(mins) + ":" + zeroPad(secs);

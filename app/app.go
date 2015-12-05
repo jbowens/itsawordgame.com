@@ -1,9 +1,11 @@
 package app
 
 import (
+	"encoding/json"
 	"html/template"
 	"net/http"
 	"sync"
+	"time"
 
 	log "github.com/Sirupsen/logrus"
 	"github.com/gorilla/websocket"
@@ -54,6 +56,7 @@ func (a *App) Start() {
 
 	// Setup the routes.
 	a.publicMux.HandleFunc("/connect", a.websocketUpgradeRoute)
+	a.publicMux.HandleFunc("/time", a.time)
 	a.publicMux.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("./static"))))
 	a.publicMux.HandleFunc("/", a.index)
 
@@ -101,6 +104,23 @@ func (a *App) websocketUpgradeRoute(rw http.ResponseWriter, req *http.Request) {
 
 	log.Infof("Initializing a new client from host %s", req.RemoteAddr)
 	a.gamekeeper.ConnectingClients <- newClient(req.RemoteAddr, ws, a.incomingMessages, a.gamekeeper.DisconnectingClients)
+}
+
+func (a *App) time(rw http.ResponseWriter, req *http.Request) {
+	response := struct {
+		ServerTime time.Time `json:"server_time"`
+	}{
+		ServerTime: time.Now(),
+	}
+
+	b, err := json.Marshal(response)
+	if err != nil {
+		log.Errorf("Error marshalling json: %s", err)
+		return
+	}
+
+	rw.Header().Set("Content-Type", "application/json")
+	rw.Write(b)
 }
 
 func (a *App) index(rw http.ResponseWriter, req *http.Request) {

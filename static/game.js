@@ -148,7 +148,7 @@
     var cell = $(this).closest('.cell');
     if (!cell.hasClass('disabled')) {
 
-      if (ws != null) {
+      if (ws !== null) {
         cell.addClass('hover');
         ws.send(JSON.stringify({
           message_type: 'cell_hover',
@@ -214,7 +214,7 @@
   }
 
   function zeroPad(n) {
-    var n = Math.floor(n);
+    n = Math.floor(n);
 
     if (n < 10) {
       return "0" + n;
@@ -231,5 +231,4 @@
     }
     return zeroPad(mins) + ":" + zeroPad(secs);
   }
-
 })();

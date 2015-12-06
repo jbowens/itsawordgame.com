@@ -4,11 +4,12 @@ import "time"
 
 // Player represents an individual player in a particular game.
 type Player struct {
-	ID      string              `json:"id"`
-	Name    string              `json:"name"`
-	Scores  []Score             `json:"scores"`
-	Words   map[string]struct{} `json:"-"`
-	Current []*trie             `json:"-"`
+	ID       string              `json:"id"`
+	Name     string              `json:"name"`
+	Scores   []Score             `json:"scores"`
+	Words    map[string]struct{} `json:"-"`
+	Current  []*trie             `json:"-"`
+	LastCell string              `json:"-"`
 }
 
 // Points totals all this player's points.
@@ -22,6 +23,13 @@ func (p *Player) Points() (total int) {
 // Cell adds the provided cell to the player's path and processes any events
 // stemming from it.
 func (p *Player) Cell(solution Solution, id string) []Score {
+	if p.LastCell == id {
+		// Ignore, don't invalidate the path they've built up. It's really common to
+		// hover over the same cell twice in a row accidentally.
+		return nil
+	}
+	p.LastCell = id
+
 	var scores []Score
 	newNodes := make([]*trie, 0, len(p.Current))
 	if p.Words == nil {

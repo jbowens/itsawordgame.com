@@ -8,8 +8,15 @@
   var height = 4;
   var ws = null;
   var game = null;
+
+  // Clock skew calculation
+  var clockSkewMillis = null;
+  var lowestLatency = null;
+
+  // UI elements
   var timerText = null;
 
+  measureClockSkew();
   $(document).ready(function(e) {
     connect();
 
@@ -66,7 +73,33 @@
     };
     ws.onerror = function(event) {
       console.log(event);
+    };
+  }
+
+  function clock() {
+    var now = new Date();
+    if (clockSkewMillis !== null) {
+      now = now - clockSkewMillis;
     }
+    return now;
+  }
+
+  function measureClockSkew() {
+    var clientStartTime = new Date();
+    $.get('/time', function(data) {
+      var clientEndTime = new Date();
+      var serverTime = Date.parse(data.server_time);
+      var oneWayLatency = (clientEndTime - clientStartTime) / 2;
+      var estimatedServerTime = serverTime + oneWayLatency;
+
+      var skew = clientEndTime - estimatedServerTime;
+
+      if (lowestLatency === null || oneWayLatency < lowestLatency) {
+        console.log("Updating clock skew to", skew, "ms");
+        clockSkewMillis = skew;
+        lowestLatency = oneWayLatency;
+      }
+   });
   }
 
   /*******************************************************************
@@ -165,12 +198,12 @@
   }
 
   function updateTimer() {
-    if (game == null) {
+    if (game === null) {
       timerTime.text('--:--');
-      return
+      return;
     }
 
-    var now = new Date();
+    var now = clock();
     var endTime = Date.parse(game.ended_at);
     var seconds = (endTime - now) / 1000;
     if (seconds > 0) {

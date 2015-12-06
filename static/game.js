@@ -37,9 +37,16 @@
     }
 
     if (data.message_type == 'announce_game') {
-      game = data.game;
-      setupBoard(game);
-      $('#my-words').empty();
+      var millisToGameStart = Date.parse(data.game.started_at) - clock() - 50;
+      if (millisToGameStart < 0) {
+        millisToGameStart = 0;
+      }
+
+      setTimeout(function() {
+          game = data.game;
+          setupBoard(game);
+          $('#my-words').empty();
+      }, millisToGameStart);
     } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
     } else if (data.message_type == 'score_event') {

@@ -109,3 +109,11 @@ p#rules {
 .clearfix {
     clear: both;
 }
+
+#loading {
+  text-align: center;
+  margin: 3em;
+  font-family: 'Trykker';
+  font-size: 1.5em;
+  color: #333;
+}

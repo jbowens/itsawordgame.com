@@ -1,7 +1,6 @@
 package game
 
 import (
-	"fmt"
 	"sort"
 	"sync"
 
@@ -87,7 +86,6 @@ func (t *trie) Count() (count int) {
 
 func (t *trie) Insert(word string, path []string) {
 	if len(path) == 0 {
-		fmt.Printf("Inserting `%s`\n", word)
 		t.Valid = true
 		t.Word = word
 		return
@@ -114,7 +112,7 @@ func findSolutionWithDictionary(board Board, d *dictionary.PrefixTree) Solution 
 	}
 
 	// Recursively traverse the board.
-	ch := make(chan Answer)
+	ch := make(chan Answer, 10)
 	var wg sync.WaitGroup
 	wg.Add(board.Height * board.Width)
 	for r := 0; r < board.Height; r++ {
@@ -157,8 +155,11 @@ func generateSolution(answers chan Answer, board Board, prefixTree *dictionary.P
 
 	cells = append(cells, c.ID)
 	if prefixTree.Valid {
+		path := make([]string, len(cells))
+		copy(path, cells)
+
 		answers <- Answer{
-			Path: cells,
+			Path: path,
 			Word: word,
 		}
 	}

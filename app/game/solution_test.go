@@ -77,11 +77,11 @@ func TestFindSolution(t *testing.T) {
 	if !ok {
 		t.Fatalf("root -> 13 -> 8 does not exist: %+v", m)
 	}
-	n, ok := m.Next["7"] // N
+	n, ok := i.Next["7"] // N
 	if !ok {
 		t.Fatalf("root -> 13 -> 8 -> 7 does not exist: %+v", i)
 	}
-	mint, ok := m.Next["2"] // T
+	mint, ok := n.Next["2"] // T
 	if !ok {
 		t.Fatalf("root -> 13 -> 8 -> 7 -> 2 does not exist: %+v", n)
 	}

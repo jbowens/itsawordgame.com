@@ -1,6 +1,7 @@
 package game
 
 import (
+	"fmt"
 	"sort"
 	"sync"
 
@@ -86,21 +87,26 @@ func (t *trie) Count() (count int) {
 
 func (t *trie) Insert(word string, path []string) {
 	if len(path) == 0 {
+		fmt.Printf("Inserting `%s`\n", word)
 		t.Valid = true
 		t.Word = word
 		return
 	}
 
-	if _, ok := t.Next[path[0]]; !ok {
-		t.Next[path[0]] = &trie{
-			Next: map[string]*trie{},
-		}
+	n, ok := t.Next[path[0]]
+	if !ok {
+		n = &trie{Next: map[string]*trie{}}
+		t.Next[path[0]] = n
 	}
-	t.Next[path[0]].Insert(word, path[1:])
+	n.Insert(word, path[1:])
 }
 
 // FindSolution finds all words paths for the provided board.
 func FindSolution(board Board) Solution {
+	return findSolutionWithDictionary(board, dictionaryPrefixTree)
+}
+
+func findSolutionWithDictionary(board Board, d *dictionary.PrefixTree) Solution {
 	s := Solution{
 		root: trie{
 			Next: make(map[string]*trie),
@@ -114,7 +120,7 @@ func FindSolution(board Board) Solution {
 	for r := 0; r < board.Height; r++ {
 		for c := 0; c < board.Width; c++ {
 			go func(r, c int) {
-				generateSolution(ch, board, dictionaryPrefixTree, []string{}, make(map[string]struct{}), "", c, r)
+				generateSolution(ch, board, d, []string{}, make(map[string]struct{}), "", c, r)
 				wg.Done()
 			}(r, c)
 		}

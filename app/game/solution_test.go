@@ -64,5 +64,31 @@ func TestFindSolution(t *testing.T) {
 		if _, ok := set[w]; !ok {
 			t.Errorf("Expected to find `%s` in solution but couldn't find it for board:\n\n%s", w, b)
 		}
+		if !dictionaryPrefixTree.Contains(w) {
+			t.Errorf("Expected the dictionaryPrefixTree to contain `%s` but couldn't find it.", w)
+		}
+	}
+
+	m, ok := solution.root.Next["13"] // M
+	if !ok {
+		t.Fatalf("root -> 13: does not exist: %+v", solution.root)
+	}
+	i, ok := m.Next["8"] // I
+	if !ok {
+		t.Fatalf("root -> 13 -> 8 does not exist: %+v", m)
+	}
+	n, ok := m.Next["7"] // N
+	if !ok {
+		t.Fatalf("root -> 13 -> 8 -> 7 does not exist: %+v", i)
+	}
+	mint, ok := m.Next["2"] // T
+	if !ok {
+		t.Fatalf("root -> 13 -> 8 -> 7 -> 2 does not exist: %+v", n)
+	}
+	if !mint.Valid {
+		t.Fatalf("root -> 13 -> 8 -> 7 -> 2 should be marked as a valid word: %+v", mint)
+	}
+	if mint.Word != "MINT" {
+		t.Fatalf("root -> 13 -> 8 -> 7 -> 2 should be the word 'MINT': %+v", mint)
 	}
 }

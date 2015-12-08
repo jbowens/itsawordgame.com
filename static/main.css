@@ -41,12 +41,12 @@ h1 {
 }
 
 #point-total {
-  font-family: 'Trykker';
   font-size: 3em;
+  font-family: arial, helvetica, verdana, sans-serif;
 }
 
 #secondary .pts {
-  font-family: 'Trykker';
+  font-family: arial, helvetica, verdana, sans-serif;
 }
 
 ul#my-words {

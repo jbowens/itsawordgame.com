@@ -1,4 +1,9 @@
 (function() {
+  /**
+   * WARNING: This is some hacky, gross jQuery javascript. My only excuse
+   * is that I don't like client-side work.
+   */
+
   // Constants
   var ANIMATION_GRANULARITY = 30;
   var ANIMATION_PAUSE_MILLI = 20;
@@ -8,6 +13,7 @@
   var height = 4;
   var ws = null;
   var game = null;
+  var pointTotal = 0;
 
   // Clock skew calculation
   var clockSkewMillis = null;
@@ -43,15 +49,19 @@
       }
 
       setTimeout(function() {
-          game = data.game;
-          setupBoard(game);
-          $('#my-words').empty();
+        game = data.game;
+        pointTotal = 0;
+        setupBoard(game);
+        $('#point-total').text(pointTotal);
+        $('#my-words').empty();
       }, millisToGameStart);
     } else if (data.message_type == 'game_review') {
       $("#board .cell").addClass("disabled");
     } else if (data.message_type == 'score_event') {
       var wordsList = $('#my-words');
       for (var i = 0; i < data.score_events.length; i++) {
+        pointTotal = pointTotal + data.score_events[i].points;
+
         var li = document.createElement('li');
         $(li).text(data.score_events[i].word);
         var points = $('<span class="points"></span>');
@@ -59,6 +69,8 @@
         $(li).append(points);
         wordsList.append(li);
       }
+
+      $('#point-total').text(pointTotal);
     }
   }
 

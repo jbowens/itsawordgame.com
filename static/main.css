@@ -34,13 +34,25 @@ h1 {
 #secondary {
   width: 175px;
   float: left;
-  margin-top: 5em;
+}
+
+#secondary .secondary-header {
+  margin-top: 1em;
+}
+
+#point-total {
+  font-family: 'Trykker';
+  font-size: 3em;
+}
+
+#secondary .pts {
+  font-family: 'Trykker';
 }
 
 ul#my-words {
   list-style: none;
   font-weight: bold;
-  margin: 0;
+  margin: 5em 0 0 0;
   padding: 0;
 }
 

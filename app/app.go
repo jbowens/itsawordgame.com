@@ -13,8 +13,8 @@ import (
 
 // TODO(jackson): Move configuration data into a file.
 const (
-	publicListenAddress   = ":8080"
-	internalListenAddress = ":8081"
+	publicListenAddress   = ":8085"
+	internalListenAddress = ":8086"
 )
 
 // App encapsulates the entire itsawordgame.com server.
